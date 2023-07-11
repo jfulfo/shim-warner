@@ -52,7 +52,7 @@ async def on_component(event):
     ctx = event.ctx
     if ctx.author.user.mention in hitters:
         hitters.remove(ctx.author.user.mention)
-        if ctx.custom_id == "hitters":
+        if ctxt.custom_id == "hitters":
             await ctx.edit_origin(content=f"**Please react to your respective button if you are online and available:**\n\nHitter: {', '.join(hitters)}\nSOP Setter: {', '.join(sop_setters)}\nKeep Setter: {', '.join(keep_setters)}", components=components)
             return
     elif ctx.author.user.mention in sop_setters:
@@ -78,6 +78,9 @@ async def on_component(event):
 
 @slash_command(name="rollcall", description="Perform a rollcall")
 async def rollcall(ctx: SlashContext):
+    hitters.clear()
+    sop_setters.clear()
+    keep_setters.clear()
     response = await ctx.respond("**Please react to your respective button if you are online and available:**\n\nHitter:\nSOP Setter:\nKeep Setter:", components=components)
 
 if __name__ == "__main__":
