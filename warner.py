@@ -38,6 +38,9 @@ keep_setters = []
 async def notif(ctx: SlashContext, user: User, text: str, times: int = 5):
     await ctx.respond(f"Notifying {user.mention} with \"{text}\" {times} times")
 
+    if times > 10:
+        times = 10
+
     for _ in range(times):
         await user.send(f"{text}")
 
