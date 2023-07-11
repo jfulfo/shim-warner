@@ -52,10 +52,19 @@ async def on_component(event):
     ctx = event.ctx
     if ctx.author.user.mention in hitters:
         hitters.remove(ctx.author.user.mention)
+        if ctx.custom_id == "hitters":
+            await ctx.edit_origin(content=f"**Please react to your respective button if you are online and available:**\n\nHitter: {', '.join(hitters)}\nSOP Setter: {', '.join(sop_setters)}\nKeep Setter: {', '.join(keep_setters)}", components=components)
+            return
     elif ctx.author.user.mention in sop_setters:
         sop_setters.remove(ctx.author.user.mention)
+        if ctx.custom_id == "sop_setters":
+            await ctx.edit_origin(content=f"**Please react to your respective button if you are online and available:**\n\nHitter: {', '.join(hitters)}\nSOP Setter: {', '.join(sop_setters)}\nKeep Setter: {', '.join(keep_setters)}", components=components)
+            return
     elif ctx.author.user.mention in keep_setters:
         keep_setters.remove(ctx.author.user.mention)
+        if ctx.custom_id == "keep_setters":
+            await ctx.edit_origin(content=f"**Please react to your respective button if you are online and available:**\n\nHitter: {', '.join(hitters)}\nSOP Setter: {', '.join(sop_setters)}\nKeep Setter: {', '.join(keep_setters)}", components=components)
+            return
 
     match ctx.custom_id:
         case "hitters":
