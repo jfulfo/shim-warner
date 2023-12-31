@@ -9,9 +9,10 @@ class MemberType(Enum):
     SETTER = 2
 
 @dataclass
-class Member:
+class RollcallMember:
     membertype: MemberType
-    user: interactions.User
+    member: interactions.Member
+    amount: int = 1
     rallied: bool = False
 
 @dataclass
@@ -19,7 +20,7 @@ class Rollcall:
     id: int
     timestamp: float
     coords: str
-    members: List[Member] = field(default_factory=list)
+    members: List[RollcallMember] = field(default_factory=list)
 
     def get_hitters(self):
         return [member for member in self.members if member.membertype == MemberType.HITTER]
@@ -34,7 +35,7 @@ class Rollcall:
         for hitter in hitters:
             if hitter.membertype is None: continue
             emoji = ' 🔥' if hitter.rallied else ''
-            hitters_string += f"- {hitter.user.username}{emoji}\n"
+            hitters_string += f"- {hitter.member.display_name} {str(hitter.amount) + 'x' if hitter.amount != 1 else ''}{emoji}\n"
         return hitters_string
 
     def get_setters_string(self):
@@ -44,29 +45,35 @@ class Rollcall:
         for setter in setters:
             if setter.membertype is None: continue
             emoji = ' 🔥' if setter.rallied else ''
-            setters_string += f"- {setter.user.username}{emoji}\n"
+            setters_string += f"- {setter.member.display_name} {str(setter.amount) + 'x' if setter.amount != 1 else ''}{emoji}\n"
         return setters_string
 
-    def set_user_as_hitter(self, user: interactions.User):
+    def set_user_as_hitter(self, user: interactions.Member):
         for member in self.members:
-            if member.user == user: 
-                member.membertype = MemberType.HITTER
+            if member.member == user and member.membertype == MemberType.HITTER: 
+                member.amount += 1
                 return
-        self.members.append(Member(MemberType.HITTER, user))
+        self.members.append(RollcallMember(MemberType.HITTER, user))
 
-    def set_user_as_setter(self, user: interactions.User):
+    def set_user_as_setter(self, user: interactions.Member):
         for member in self.members:
-            if member.user == user: 
-                member.membertype = MemberType.SETTER
+            if member.member == user and member.membertype == MemberType.SETTER: 
+                member.amount += 1
                 return
-        self.members.append(Member(MemberType.SETTER, user))
+        self.members.append(RollcallMember(MemberType.SETTER, user))
 
-    def set_user_as_rallied(self, user: interactions.User):
+    def set_user_as_rallied(self, user: interactions.Member):
+        all_true = True
         for member in self.members:
-            if member.user == user: 
-                member.rallied = not member.rallied
-                return
-        self.members.append(Member(None, user))
+            if member.member == user: 
+                all_true = member.rallied and all_true
+        for member in self.members:
+            if member.member == user:
+                member.rallied = False if all_true else True
+        #self.members.append(Member(None, user))
+
+    def reset_user(self, user: interactions.Member):
+        self.members = [member for member in self.members if member.member != user]
 
     def generate_rollcall_prompt(self):
         return "Please react to your respective button if you are online and available:"

@@ -26,7 +26,10 @@ rollcall_components = spread_to_rows(
         custom_id="setters", label="Setter", style=ButtonStyle.PRIMARY
     ),
     Button(
-        custom_id="rally", label="Rally Dragon", style=ButtonStyle.SECONDARY
+        custom_id="rally", label="Rally Dragon", style=ButtonStyle.DANGER
+    ),
+    Button(
+        custom_id="reset", label="No longer available", style=ButtonStyle.SECONDARY
     )
 )
 @slash_command(name="rollcall")
@@ -41,7 +44,7 @@ async def rollcall(ctx: SlashContext, coords: str = ""):
 @component_callback("hitters")
 async def set_hitter(ctx: ComponentContext):
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
-    rollcall.set_user_as_hitter(ctx.user)
+    rollcall.set_user_as_hitter(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)
 
@@ -49,14 +52,21 @@ async def set_hitter(ctx: ComponentContext):
 @component_callback("setters")
 async def set_setter(ctx: ComponentContext):
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
-    rollcall.set_user_as_setter(ctx.user)
+    rollcall.set_user_as_setter(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)
 
 @component_callback("rally")
 async def set_rallied(ctx: ComponentContext):
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
-    rollcall.set_user_as_rallied(ctx.user)
+    rollcall.set_user_as_rallied(ctx.member)
+    await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
+    rollcall_history.set_rollcall(rollcall)
+
+@component_callback("reset")
+async def reset_user(ctx: ComponentContext): 
+    rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
+    rollcall.reset_user(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)
 
@@ -64,7 +74,7 @@ if __name__ == "__main__":
     load_dotenv()
     logging.basicConfig(level=logging.INFO)
     cls_log = logging.getLogger(interactions.const.logger_name)
-    cls_log.setLevel(logging.DEBUG)
+    cls_log.setLevel(logging.INFO)
 
     TOKEN = os.getenv("TOKEN")
     bot = Client(intents=Intents.DEFAULT)
