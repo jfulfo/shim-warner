@@ -44,6 +44,7 @@ async def rollcall(ctx: SlashContext, coords: str = ""):
 @component_callback("hitters")
 async def set_hitter(ctx: ComponentContext):
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
+    if rollcall is None: return await ctx.edit_origin(content="", embeds=[Embed(title="This rollcall is out of date")], components=[])
     rollcall.set_user_as_hitter(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)
@@ -52,6 +53,7 @@ async def set_hitter(ctx: ComponentContext):
 @component_callback("setters")
 async def set_setter(ctx: ComponentContext):
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
+    if rollcall is None: return await ctx.edit_origin(content="", embeds=[Embed(title="This rollcall is out of date")], components=[])
     rollcall.set_user_as_setter(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)
@@ -59,6 +61,7 @@ async def set_setter(ctx: ComponentContext):
 @component_callback("rally")
 async def set_rallied(ctx: ComponentContext):
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
+    if rollcall is None: return await ctx.edit_origin(content="", embeds=[Embed(title="This rollcall is out of date")], components=[])
     rollcall.set_user_as_rallied(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)
@@ -66,6 +69,7 @@ async def set_rallied(ctx: ComponentContext):
 @component_callback("reset")
 async def reset_user(ctx: ComponentContext): 
     rollcall = rollcall_history.get_rollcall_from_embed_title(ctx.message.embeds[0].title)
+    if rollcall is None: return await ctx.edit_origin(content="", embeds=[Embed(title="This rollcall is out of date")], components=[])
     rollcall.reset_user(ctx.member)
     await ctx.edit_origin(content=rollcall.generate_rollcall_prompt(), embed=rollcall.generate_rollcall_embed(), components=rollcall_components)
     rollcall_history.set_rollcall(rollcall)

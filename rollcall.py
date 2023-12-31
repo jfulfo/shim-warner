@@ -94,9 +94,11 @@ class RollcallHistory:
         self.rollcalls = [rollcall for rollcall in self.rollcalls if current_time - rollcall.timestamp < cutoff]
 
     def get_rollcall_from_embed_title(self, title: str):
+        self.clean()
         id = int(title.split(" ")[1])
         for rollcall in self.rollcalls:
             if rollcall.id == id: return rollcall
+        return None
 
     def set_rollcall(self, rollcall: Rollcall):
         for i in range(len(self.rollcalls)):
