@@ -16,7 +16,7 @@ dbus-python==1.2.16
 discord-py-interactions==4.4.1
 distlib==0.3.6
 distro==1.5.0
-distro-info==1.0+deb11u1
+distro-info==1.0
 filelock==3.12.2
 frozenlist==1.4.1
 gixy==0.1.20
